@@ -32,9 +32,10 @@ extern  void SEGGER_UART_init(uint32_t);
 /* USER CODE BEGIN PTD */
 static void task1_handler(void *parameters);
 static void task2_handler(void *parameters);
+void Button_interrupt_Handler(void);
 TaskHandle_t task1_handle;
 TaskHandle_t task2_handle;
-TaskHandle_t button_handle;
+//TaskHandle_t button_handle;
 TaskHandle_t volatile next_task = NULL;
 
 /* USER CODE END PTD */
@@ -55,12 +56,13 @@ static void task1_handler(void *parameters)
 
 		if(waitstatus==pdTRUE)
 		{
-			vTaskSuspendAll();
+			//vTaskSuspendAll();
+			portENTER_CRITICAL();
 			next_task = task2_handle;
-			xTaskResumeAll();
+			//xTaskResumeAll();
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 			vTaskDelete(NULL);
-
+			portEXIT_CRITICAL();
 
 		}
 
@@ -81,12 +83,14 @@ static void task2_handler(void *parameters)
 
 		if(waitstatus==pdTRUE)
 			{
-				vTaskSuspendAll();
+				//vTaskSuspendAll();
+				portENTER_CRITICAL();
 				next_task = NULL;
-				xTaskResumeAll();
+				//xTaskResumeAll();
 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
-				vTaskDelete(button_handle);
+				//vTaskDelete(button_handle);
 				vTaskDelete(NULL);
+				portEXIT_CRITICAL();
 
 
 			}
@@ -94,6 +98,7 @@ static void task2_handler(void *parameters)
 }
 
 
+/*
 static void button_handler(void *parameters)
 {
 	uint8_t button_read = 1;
@@ -116,6 +121,12 @@ static void button_handler(void *parameters)
 		previous_read = button_read;
 		vTaskDelay(pdMS_TO_TICKS(20));
 	}
+}
+*/
+
+void Button_interrupt_Handler(void)
+{
+	xTaskNotifyFromISR(next_task,0,eNoAction, NULL);
 }
 /* USER CODE END PD */
 
@@ -153,7 +164,7 @@ int main(void)
 
 	BaseType_t task1_status;
 	BaseType_t task2_status;
-	BaseType_t button_status;
+	//BaseType_t button_status;
 
   /* USER CODE END 1 */
 
@@ -195,8 +206,8 @@ int main(void)
   task2_status=xTaskCreate(task2_handler, "Task-2", 2000, "Hello world task 2", 2, &task2_handle);
   configASSERT(task2_status == pdPASS);
 
-  button_status=xTaskCreate(button_handler, "Button task", 2000, "Button handler running", 3, &button_handle);
-  configASSERT(button_status == pdPASS);
+  //button_status=xTaskCreate(button_handler, "Button task", 2000, "Button handler running", 3, &button_handle);
+  //configASSERT(button_status == pdPASS);
 
 
   vTaskStartScheduler();
@@ -277,11 +288,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PE3 PE4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
+  /*Configure GPIO pin : PE3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Button_Pin */
+  GPIO_InitStruct.Pin = Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA6 PA7 */
   GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
@@ -289,6 +306,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

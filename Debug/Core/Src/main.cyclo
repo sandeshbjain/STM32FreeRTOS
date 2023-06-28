@@ -1,8 +1,8 @@
-main.c:44:13:task1_handler	2
-main.c:71:13:task2_handler	2
-main.c:97:13:button_handler	3
-main.c:149:5:main	4
-main.c:220:6:SystemClock_Config	3
-main.c:267:13:MX_GPIO_Init	1
-main.c:309:6:HAL_TIM_PeriodElapsedCallback	2
-main.c:326:6:Error_Handler	1
+main.c:45:13:task1_handler	2
+main.c:73:13:task2_handler	2
+main.c:127:6:Button_interrupt_Handler	1
+main.c:160:5:main	3
+main.c:231:6:SystemClock_Config	3
+main.c:278:13:MX_GPIO_Init	1
+main.c:330:6:HAL_TIM_PeriodElapsedCallback	2
+main.c:347:6:Error_Handler	1

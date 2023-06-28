@@ -1,8 +1,8 @@
-../Core/Src/main.c:44:13:task1_handler	32	static
-../Core/Src/main.c:71:13:task2_handler	32	static
-../Core/Src/main.c:97:13:button_handler	32	static
-../Core/Src/main.c:149:5:main	40	static,ignoring_inline_asm
-../Core/Src/main.c:220:6:SystemClock_Config	88	static
-../Core/Src/main.c:267:13:MX_GPIO_Init	40	static
-../Core/Src/main.c:309:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/main.c:326:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:45:13:task1_handler	32	static
+../Core/Src/main.c:73:13:task2_handler	32	static
+../Core/Src/main.c:127:6:Button_interrupt_Handler	16	static
+../Core/Src/main.c:160:5:main	32	static,ignoring_inline_asm
+../Core/Src/main.c:231:6:SystemClock_Config	88	static
+../Core/Src/main.c:278:13:MX_GPIO_Init	40	static
+../Core/Src/main.c:330:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:347:6:Error_Handler	4	static,ignoring_inline_asm
