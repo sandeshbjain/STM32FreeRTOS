@@ -126,7 +126,17 @@ static void button_handler(void *parameters)
 
 void Button_interrupt_Handler(void)
 {
-	xTaskNotifyFromISR(next_task,0,eNoAction, NULL);
+	BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
+
+	xTaskNotifyFromISR(next_task,0,eNoAction, &pxHigherPriorityTaskWoken);
+
+	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+}
+
+void vApplicationIdleHook( void )
+{
+	HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
 }
 /* USER CODE END PD */
 

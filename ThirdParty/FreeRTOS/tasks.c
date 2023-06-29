@@ -2029,7 +2029,7 @@ void vTaskStartScheduler( void )
     #else /* if ( configSUPPORT_STATIC_ALLOCATION == 1 ) */
         {
             /* The Idle task is being created using dynamically allocated RAM. */
-            xReturn = xTaskCreate( prvIdleTask,
+		xReturn = xTaskCreate(prvIdleTask,
                                    configIDLE_TASK_NAME,
                                    configMINIMAL_STACK_SIZE,
                                    ( void * ) NULL,
